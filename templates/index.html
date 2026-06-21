@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tebak Angka Localhost</title>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .terminal-box {
+            background-color: #111827;
+            border: 2px solid #00ffcc;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+            padding: 25px;
+            width: 450px;
+            border-radius: 8px;
+        }
+        .output-screen {
+            background-color: #030712;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 150px;
+            margin-bottom: 20px;
+            border: 1px solid #1f2937;
+            line-height: 1.6;
+        }
+        .line {
+            margin: 5px 0;
+            white-space: pre-wrap;
+        }
+        .highlight-win { color: #10b981; font-weight: bold; }
+        .highlight-err { color: #ef4444; }
+        .highlight-warn { color: #f59e0b; }
+        
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            background-color: #030712;
+            border: 1px solid #ff007f;
+            color: #fff;
+            font-family: inherit;
+            border-radius: 4px;
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 0, 127, 0.2);
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #ff007f;
+            color: white;
+            border: none;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+        }
+        button:hover { background-color: #e0006c; }
+        .btn-reset {
+            background-color: #00ffcc;
+            color: #0b0f19;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+            width: 100%;
+        }
+        .btn-reset:hover { background-color: #00ccaa; }
+    </style>
+</head>
+<body>
+
+<div class="terminal-box">
+    <div class="output-screen">
+        {% for line in logs %}
+            <div class="line 
+                {% if 'Selamat!' in line %}highlight-win{% elif 'Salah!' in line or 'plis' in line %}highlight-err{% elif 'tidak memasukkan' in line %}highlight-warn{% endif %}">
+                {{ line }}
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if not game_over %}
+    <form method="POST" style="display: flex; justify-content: space-between;">
+        <input type="text" name="guess" placeholder="Ketik angka..." autocomplete="off" required autofocus>
+        <button type="submit">KIRIM</button>
+    </form>
+    {% else %}
+    <form method="POST">
+        <button type="submit" name="reset" class="btn-reset">MAIN LAGI</button>
+    </form>
+    {% endif %}
+</div>
+
+</body>
+</html>
