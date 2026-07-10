@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>E-BARIG AI</title>
+    <title>EBARIG AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -572,6 +572,7 @@
 
             <div class="input-bar-wrapper">
                 <input type="file" id="fileInput" accept="image/*">
+                <!-- Tombol Klip Kertas Kunci Utama Pengunggahan Gambar -->
                 <button class="btn-action" id="attachBtn" title="Unggah Foto Tugas/PR">
                     <i class="fa-solid fa-paperclip"></i>
                 </button>
@@ -631,6 +632,12 @@
             darkModeBtn.classList.add('active');
             whiteModeBtn.classList.remove('active');
             sidebarPanel.classList.remove('active');
+        });
+
+        // PERBAIKAN BUG: Memicu klik file asli ketika tombol klip diklik
+        attachBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            fileInput.click();
         });
 
         let currentBase64Image = null;
