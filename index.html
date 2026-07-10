@@ -110,7 +110,7 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 100; /* TAMBAHKAN BARIS INI */
+            z-index: 100;
         }
 
         /* EFEK FLASH ANIMASI SAAT MENGAKTIFKAN CODING MODE */
@@ -460,7 +460,16 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.4); z-index: 90;
+            background: rgba(0,0,0,0.4); 
+            z-index: 1001;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
         }
 
         /* LOADING ANIMATION */
@@ -493,22 +502,9 @@
                 top: 0; 
                 height: 100%;
                 transform: translateX(-100%);
-                z-index: 1002; /* Di atas overlay */
+                z-index: 1002;
             }
             .main-sidebar.active { transform: translateX(0); }
-            
-            /* Setel overlay agar benar-benar berada di tengah-tengah lapisan */
-            .sidebar-overlay {
-                z-index: 1001; 
-                pointer-events: none; /* Saat tersembunyi, klik tembus ke belakang */
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-            .sidebar-overlay.active { 
-                display: block; 
-                opacity: 1;
-                pointer-events: auto; /* Saat aktif, baru bisa diklik untuk menutup */
-            }
             
             .app-container { height: 100vh; height: 100dvh; margin: 0; border-radius: 0; border: none; z-index: 1000; }
             .app-header { padding: 12px 16px; }
@@ -535,8 +531,7 @@
             
             <div class="history-section">
                 <div class="history-title">Percakapan Terbaru</div>
-                <div id="chatHistoryList">
-                    </div>
+                <div id="chatHistoryList"></div>
             </div>
 
             <div class="sidebar-footer">
@@ -565,7 +560,7 @@
             <main class="chat-area" id="chatArea">
                 <div class="welcome-screen" id="welcomeScreen">
                     <i class="fa-solid fa-wand-magic-sparkles" id="welcomeIcon"></i>
-                    <h2 id="welcomeTitle">Apakah ada pertanyaan??</h2>
+                    <h2 id="welcomeTitle">Apakah ada pertanyaan????</h2>
                     <p id="welcomeDesc">project ai pertama buatan sendiri, jadi kalo ada bug mohon untuk melapor. terimakasih</p>
                 </div>
             </main>
@@ -699,13 +694,11 @@
         menuToggleBtn.addEventListener('click', toggleSidebar);
         sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // FIX UNTUK HP: MENGAKTIFKAN CODING MODE
         codingModeBtn.addEventListener('click', () => {
             isCodingModeActive = !isCodingModeActive;
-            isDarkModeActive = false; // Matikan mode gambar jika coding aktif
+            isDarkModeActive = false; 
             window.speechSynthesis.cancel();
 
-            // Jalankan efek animasi transisi flash glitch
             appContainer.classList.add('flash-animation');
             setTimeout(() => appContainer.classList.remove('flash-animation'), 400);
 
@@ -726,16 +719,14 @@
                 resetToWhiteModeText();
             }
             
-            // Beri jeda sedikit di HP agar animasinya sempat berjalan sebelum menu menutup
             if(window.innerWidth <= 768) {
                 setTimeout(toggleSidebar, 150);
             }
         });
 
-        // FIX UNTUK HP: Mode Gambar (Dark Mode)
         themeToggleBtn.addEventListener('click', () => {
             isDarkModeActive = !isDarkModeActive;
-            isCodingModeActive = false; // Matikan mode coding jika gambar aktif
+            isCodingModeActive = false; 
             window.speechSynthesis.cancel();
             
             appContainer.classList.add('flash-animation');
@@ -757,7 +748,6 @@
                 resetToWhiteModeText();
             }
             
-            // Beri jeda sedikit di HP agar animasinya sempat berjalan sebelum menu menutup
             if(window.innerWidth <= 768) {
                 setTimeout(toggleSidebar, 150);
             }
@@ -886,7 +876,6 @@
             userInput.value = '';
             const loadingId = appendLoadingIndicator();
 
-            // 1. Jalur Mode Gambar (Dark Mode)
             if (isDarkModeActive) {
                 try {
                     clearImagePreview();
@@ -907,7 +896,6 @@
                 }
             }
 
-            // 2. Jalur Teks Biasa & Coding Mode
             const base64Data = currentBase64Image;
             clearImagePreview();
 
@@ -915,7 +903,6 @@
                 let messageContent = [{ type: "text", text: text || "Tolong analisis gambar ini." }];
                 if (base64Data) messageContent.push({ type: "image_url", image_url: { url: base64Data } });
 
-                // Penyesuaian instruksi kepribadian AI berdasarkan Coding Mode aktif/tidak
                 let instruksiSifatAI = "Anda adalah Guru Privat Digital bernama E-BARIG AI yang dibuat oleh Agung (Tole). Anda sangat sabar, jujur, baik hati, ramah, tenang, terstruktur, dan menjelaskan materi pelajaran dengan penuh kelembutan.";
                 
                 if (isCodingModeActive) {
@@ -931,7 +918,7 @@
                             { role: "system", content: instruksiSifatAI },
                             { role: "user", content: messageContent }
                         ],
-                        temperature: isCodingModeActive ? 0.2 : 0.6 // Suhu lebih rendah agar kode akurat
+                        temperature: isCodingModeActive ? 0.2 : 0.6 
                     })
                 });
 
@@ -940,7 +927,6 @@
                 const aiResult = data.choices[0].message.content;
 
                 removeLoadingIndicator(loadingId);
-                // Jangan pakai suara (TTS) otomatis jika sedang di mode Coding karena aneh membaca baris kode
                 appendAiMessage(aiResult, !isCodingModeActive, true, true);
 
             } catch (error) {
