@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>E-BARIG AI</title>
+    <title>E-BARIG AI (cihuyy)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -694,6 +694,9 @@
         menuToggleBtn.addEventListener('click', toggleSidebar);
         sidebarOverlay.addEventListener('click', toggleSidebar);
 
+        // ==========================================================================
+        // VERSI FIX: AMAN UNTUK HP (TANPA MEMICU BUG OVERLAY LOCK)
+        // ==========================================================================
         codingModeBtn.addEventListener('click', () => {
             isCodingModeActive = !isCodingModeActive;
             isDarkModeActive = false; 
@@ -719,8 +722,10 @@
                 resetToWhiteModeText();
             }
             
+            // Trik HP: Tutup sidebar dengan menghapus class active secara aman
             if(window.innerWidth <= 768) {
-                setTimeout(toggleSidebar, 150);
+                mainSidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
             }
         });
 
@@ -748,8 +753,10 @@
                 resetToWhiteModeText();
             }
             
+            // Trik HP: Tutup sidebar dengan menghapus class active secara aman
             if(window.innerWidth <= 768) {
-                setTimeout(toggleSidebar, 150);
+                mainSidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
             }
         });
 
