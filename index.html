@@ -681,7 +681,7 @@
         menuToggleBtn.addEventListener('click', toggleSidebar);
         sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // FITUR BARU: MENGAKTIFKAN CODING MODE
+        // FIX UNTUK HP: MENGAKTIFKAN CODING MODE
         codingModeBtn.addEventListener('click', () => {
             isCodingModeActive = !isCodingModeActive;
             isDarkModeActive = false; // Matikan mode gambar jika coding aktif
@@ -707,10 +707,14 @@
                 document.body.classList.remove('coding-mode');
                 resetToWhiteModeText();
             }
-            if(window.innerWidth <= 768) toggleSidebar();
+            
+            // Beri jeda sedikit di HP agar animasinya sempat berjalan sebelum menu menutup
+            if(window.innerWidth <= 768) {
+                setTimeout(toggleSidebar, 150);
+            }
         });
 
-        // Mode Gambar (Dark Mode)
+        // FIX UNTUK HP: Mode Gambar (Dark Mode)
         themeToggleBtn.addEventListener('click', () => {
             isDarkModeActive = !isDarkModeActive;
             isCodingModeActive = false; // Matikan mode coding jika gambar aktif
@@ -734,7 +738,11 @@
                 document.body.classList.remove('dark-mode');
                 resetToWhiteModeText();
             }
-            if(window.innerWidth <= 768) toggleSidebar();
+            
+            // Beri jeda sedikit di HP agar animasinya sempat berjalan sebelum menu menutup
+            if(window.innerWidth <= 768) {
+                setTimeout(toggleSidebar, 150);
+            }
         });
 
         function resetToWhiteModeText() {
