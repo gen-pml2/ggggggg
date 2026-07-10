@@ -484,12 +484,15 @@
         .message pre code { color: #cdd6f4 !important; background: transparent !important; padding: 0; border-radius: 0; display: block; white-space: pre; }
         body.coding-mode .message pre code { color: #00f0ff !important; }
 
-        /* RESPONSIVITAS */
+        /* RESPONSIVITAS (Cari bagian ini di CSS kodemu) */
         @media (max-width: 768px) {
             .main-sidebar {
                 position: fixed;
-                left: 0; top: 0; height: 100%;
+                left: 0; 
+                top: 0; 
+                height: 100%;
                 transform: translateX(-100%);
+                z-index: 101; /* UBAH ATAU TAMBAHKAN INI: Harus lebih tinggi dari overlay (90) */
             }
             .main-sidebar.active { transform: translateX(0); }
             .sidebar-overlay.active { display: block; }
