@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-BARIG AI</title>
+    <title>EBARIG AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <!-- Tambahan Library Penterjemah Markdown (MarkedJS) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* ==========================================================================
            1. CSS CONFIG & THEME (Gaya Elegan Mirip Gemini Advanced)
@@ -322,6 +323,65 @@
             .app-container { height: 100vh; margin: 0; border-radius: 0; border: none; }
             .message { max-width: 90%; }
         }
+        /* Taruh kode CSS kotak coding baru ini di bawah .message.ai { ... } */
+        .code-container {
+            position: relative;
+            margin: 12px 0;
+            background: #1e1e2e;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #313244;
+        }
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #11111b;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            color: #a6adc8;
+            font-family: monospace;
+            border-bottom: 1px solid #313244;
+        }
+        .btn-copy {
+            background: #313244;
+            color: #cdd6f4;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-copy:hover {
+            background: #45475a;
+            color: #ffffff;
+        }
+        .message pre {
+            margin: 0;
+            padding: 16px;
+            overflow-x: auto;
+            background: transparent !important;
+        }
+        .message code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: #f38ba8;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .message pre code {
+            color: #cdd6f4 !important;
+            background: transparent !important;
+            padding: 0;
+            border-radius: 0;
+            display: block;
+            white-space: pre;
+        }
     </style>
 </head>
 <body>
@@ -557,6 +617,58 @@
                 chatArea.appendChild(welcomeScreen);
             }
         });
+
+// KODE BARU YANG SUDAH DIPERBAIKI:
+        const renderer = new marked.Renderer();
+        renderer.code = function(codeInfo, infostring) {
+            // Deteksi otomatis jika parameter berupa objek (Marked baru) atau string (Marked lama)
+            const code = typeof codeInfo === 'string' ? codeInfo : codeInfo.text;
+            const lang = typeof codeInfo === 'string' ? (infostring || 'code') : (codeInfo.lang || 'code');
+            
+            // Amankan teks kodingan agar karakter HTML tidak merusak tampilan web Anda
+            const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
+            return `
+                <div class="code-container">
+                    <div class="code-header">
+                        <span><i class="fa-solid fa-code"></i> ${lang}</span>
+                        <button class="btn-copy" onclick="copyCodeText(this)"><i class="fa-regular fa-copy"></i> Salin</button>
+                    </div>
+                    <pre><code class="language-${lang}">${escapedCode}</code></pre>
+                </div>
+            `;
+        };
+        marked.setOptions({ renderer: renderer });
+
+        // Fungsi Global untuk Tombol Salin Kode
+        window.copyCodeText = function(buttonElement) {
+            const codeContainer = buttonElement.closest('.code-container');
+            const codeText = codeContainer.querySelector('code').innerText;
+
+            navigator.clipboard.writeText(codeText).then(() => {
+                buttonElement.innerHTML = `<i class="fa-solid fa-check" style="color: #a6e3a1;"></i> Tersalin!`;
+                setTimeout(() => {
+                    buttonElement.innerHTML = `<i class="fa-regular fa-copy"></i> Salin`;
+                }, 2000);
+            }).catch(err => {
+                alert("Gagal menyalin kode.");
+            });
+        };
+        // === BATAS AKHIR ===
+
+        attachBtn.addEventListener('click', () => fileInput.click());
+
+        // Cari fungsi ini di bagian bawah, lalu ubah isinya menjadi seperti ini:
+        function appendAiMessage(text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', 'ai');
+            
+            // Menggunakan marked.parse untuk mengubah teks markdown dari AI menjadi HTML
+            msgDiv.innerHTML = marked.parse(text);
+            
+            chatArea.appendChild(msgDiv);
+            scrollToBottom();
+        }
     </script>
 </body>
 </html>
