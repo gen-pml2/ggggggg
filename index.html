@@ -274,11 +274,6 @@
             align-items: center;
             font-size: 1.15rem;
             transition: all 0.2s;
-            
-            /* ANTI-HIGHLIGHT & SELEKSI DI HP */
-            -webkit-tap-highlight-color: transparent;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         .btn-action:hover {
@@ -288,6 +283,11 @@
 
         .btn-send {
             background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.05);
             color: white;
         }
 
@@ -324,6 +324,25 @@
             .app-container { height: 100vh; margin: 0; border-radius: 0; border: none; }
             .message { max-width: 90%; }
         }
+        .btn-action {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.15rem;
+    transition: all 0.2s;
+    
+    /* TAMBAHKAN 3 BARIS INI AGAR TIDAK DI-HIGHLIGHT DI HP */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+}
     </style>
 </head>
 <body>
@@ -345,7 +364,7 @@
             <div class="welcome-screen" id="welcomeScreen">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <h2>Apakah ada pertanyaan?</h2>
-                <p>project ai pertama buatan sendiri, jadi kalo ada bug mohon untuk melapor. terimakasih</p>
+                <p>project ai pertama buatan sendiri, jadi kalo ada bug mohon untuk melapor.  terimakasih</p>
             </div>
         </main>
 
@@ -372,11 +391,11 @@
     </div>
 
     <script>
-        // --- KONFIGURASI API KEY GROQ ---
+        // --- AMBIL API KEY GROQ ---
         const GROQ_API_KEY = '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'; 
-        // Menggunakan model vision resmi aktif milik Groq
-        const MODEL_NAME = 'llama-3.2-11b-vision-preview'; 
+        const MODEL_NAME = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
+        // Elemen HTML
         const chatArea = document.getElementById('chatArea');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
@@ -389,25 +408,32 @@
         const removePreviewBtn = document.getElementById('removePreviewBtn');
         const fileNameSpan = document.getElementById('fileNameSpan');
 
-        let currentBase64Image = null;
+        let currentBase64Image = null; // Menyimpan data string gambar jika ada
 
+        // Pemicu Klik File Input sewaktu tombol klip ditekan
         attachBtn.addEventListener('click', () => fileInput.click());
 
+        // Event sewaktu user memilih file foto
         fileInput.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
                 fileNameSpan.textContent = file.name;
                 const reader = new FileReader();
+                
                 reader.onload = function(e) {
                     imagePreview.src = e.target.result;
                     previewContainer.style.display = 'flex';
+                    // Mengambil data string base64 murni (menghapus bagian data:image/...;base64,)
                     currentBase64Image = e.target.result;
                 }
                 reader.readAsDataURL(file);
             }
         });
 
-        removePreviewBtn.addEventListener('click', () => clearImagePreview());
+        // Hapus Foto Preview
+        removePreviewBtn.addEventListener('click', () => {
+            clearImagePreview();
+        });
 
         function clearImagePreview() {
             fileInput.value = '';
@@ -416,29 +442,47 @@
             imagePreview.src = '';
         }
 
+        // Fungsi Mengirim Pesan dan Foto ke Groq
         async function handleSendMessage() {
             const text = userInput.value.trim();
+            
+            // Minimal harus ada teks atau ada gambar yang dikirim
             if (!text && !currentBase64Image) return;
 
             if (welcomeScreen) welcomeScreen.style.display = 'none';
 
+            // Tampilkan chat user ke layar (beserta gambarnya jika ada)
             appendUserMessage(text, currentBase64Image);
             
+            // Simpan variabel teks dan gambar untuk dikirim, lalu reset input komponen
             const promptText = text || "Tolong analisis gambar ini.";
             const base64Data = currentBase64Image;
             
             userInput.value = '';
             clearImagePreview();
 
+            // Jalankan animasi loading
             const loadingId = appendLoadingIndicator();
 
             try {
-                let messageContent = [{ type: "text", text: promptText }];
+                // Perbaikan Pengecekan Pengunci yang Salah Kemarin
+                if (!GROQ_API_KEY || GROQ_API_KEY.includes('TEMPEL_API_KEY')) {
+                    throw new Error("Kunci API Groq belum diisikan dengan benar di variabel GROQ_API_KEY.");
+                }
+
+                // Bangun struktur pesan sesuai spesifikasi API Vision Groq / OpenAI
+                let messageContent = [];
                 
+                // 1. Masukkan teks instruksi user
+                messageContent.push({ type: "text", text: promptText });
+                
+                // 2. Jika ada gambar, masukkan skema URL berbasis Base64
                 if (base64Data) {
                     messageContent.push({
                         type: "image_url",
-                        image_url: { url: base64Data }
+                        image_url: {
+                            url: base64Data // Berisi string lengkap "data:image/jpeg;base64,..."
+                        }
                     });
                 }
 
@@ -453,8 +497,7 @@
                         messages: [
                             {
                                 role: "system",
-                                content: "Anda adalah Guru Privat Digital dan Asisten Pintar Multimodal. Tugas Anda membantu siswa menyelesaikan PR, mengoreksi jawaban dari foto, menguraikan langkah matematika, atau menjelaskan konten gambar dengan sangat sabar, detail, terstruktur, dan mudah dipahami. Dan jika Anda ditanyai siapa yang membuat kamu, maka Anda jawab dengan tegas: 'Saya E-BARIG AI dibuat oleh Agung atau julukannya Tole.'"
-                            },
+                                content: "Anda adalah Guru Privat Digital dan Asisten Pintar Multimodal. Tugas Anda membantu siswa menyelesaikan PR, mengoreksi jawaban dari foto, menguraikan langkah matematika, atau menjelaskan konten gambar dengan sangat sabar, detail, terstruktur, dan mudah dipahami. dan jika anda ditanyai siapa yang membuat kamu maka kamu jawab dengan tegas saya e-barig ai dibuat oleh agung atau julukanya tole."                            },
                             {
                                 role: "user",
                                 content: messageContent
@@ -482,31 +525,37 @@
             }
         }
 
+        // Tampilkan gelembung pesan user
         function appendUserMessage(text, imageSrc) {
             const msgDiv = document.createElement('div');
             msgDiv.classList.add('message', 'user');
+
             if (imageSrc) {
                 const img = document.createElement('img');
                 img.src = imageSrc;
                 msgDiv.appendChild(img);
             }
+
             if (text) {
                 const txtNode = document.createElement('span');
                 txtNode.innerHTML = text.replace(/\n/g, '<br>');
                 msgDiv.appendChild(txtNode);
             }
+
             chatArea.appendChild(msgDiv);
             scrollToBottom();
         }
 
+        // Tampilkan gelembung respon AI
         function appendAiMessage(text) {
             const msgDiv = document.createElement('div');
             msgDiv.classList.add('message', 'ai');
-            msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+            msgDiv.innerHTML = text.replace(/\n/g, '<br>'); // Format sederhana untuk line-break
             chatArea.appendChild(msgDiv);
             scrollToBottom();
         }
 
+        // Indikator Titik Berpikir
         function appendLoadingIndicator() {
             const loadingDiv = document.createElement('div');
             const uniqueId = 'loader-' + Date.now();
@@ -533,31 +582,21 @@
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        // --- SISTEM PEMICU HP TERPADU ---
-        const triggerSubmit = (e) => {
-            e.preventDefault();
-            handleSendMessage();
-        };
+        // Hapus kode sendBtn.addEventListener lama, ganti dengan versi terpadu ini:
+const triggerSubmit = (e) => {
+    e.preventDefault();
+    handleSendMessage();
+};
 
-        // Responsif penuh baik klik biasa maupun sentuhan HP
-        sendBtn.addEventListener('click', triggerSubmit);
-        sendBtn.addEventListener('touchstart', triggerSubmit, { passive: false });
+sendBtn.addEventListener('click', triggerSubmit);
 
-        userInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleSendMessage();
-            }
-        });
-
-        clearBtn.addEventListener('click', () => {
-            chatArea.innerHTML = '';
-            clearImagePreview();
-            if (welcomeScreen) {
-                welcomeScreen.style.display = 'flex';
-                chatArea.appendChild(welcomeScreen);
-            }
-        });
+// Tangani keyboard enter di HP dengan aman
+userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSendMessage();
+    }
+});
     </script>
 </body>
 </html>
