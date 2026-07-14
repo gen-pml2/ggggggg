@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
+        /* ==========================================================================
+          anjiinggg capek gw cog padahal baru permulaan, harus nyari link di google cok 
+          ok, tunggu hasil
+           ========================================================================== */
         * {
             margin: 0;
             padding: 0;
@@ -97,6 +101,9 @@
             background: #020617;
         }
 
+        /* ==========================================================================
+          aduuuh capek cok ngerapiin css ini, pusing dah gw. ngotak dikit
+           ========================================================================== */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -124,8 +131,12 @@
             flex-direction: column;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
+            /* Untuk Desktop desktop default */
         }
 
+        /* ==========================================================================
+             apalagi ini cok malas dah.
+           ========================================================================== */
         .app-container {
             width: 100%;
             max-width: 1200px;
@@ -412,8 +423,15 @@
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
         }
 
         .ai-audio-control {
@@ -620,19 +638,45 @@
             animation: bounce 1.4s infinite ease-in-out both;
         }
 
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
 
         @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1.0); }
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1.0);
+            }
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
+        /* ==========================================================================
+            curhat dikit gpplah, hari ini dan esok hari akan gw lanjut sampai selsai
+            meskipun pusing + capek tapi harus sabar karna sambil belajar gw. gw ganteng
+            tapi pemalu, meskipun pemalu dikira temanya dikit, chhh, tidak bro . pemalu
+            hanya tempat aku mencari info
+           ========================================================================== */
         @media (max-width: 768px) {
             .main-sidebar {
                 position: fixed;
@@ -643,6 +687,7 @@
                 width: 280px;
                 transform: translateX(-100%);
                 z-index: 1000;
+                /* lanjutin ga ya cok capek */
                 box-shadow: none;
             }
 
@@ -661,9 +706,18 @@
                 z-index: 5;
             }
 
-            .app-header { padding: 12px 16px; }
-            .chat-area { padding: 16px; }
-            .message { max-width: 90%; }
+            .app-header {
+                padding: 12px 16px;
+            }
+
+            .chat-area {
+                padding: 16px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
             .input-panel {
                 padding: 12px 16px;
                 padding-bottom: calc(12px + env(safe-area-inset-bottom));
@@ -675,8 +729,11 @@
 <body>
 
     <canvas id="galaxyCanvas"></canvas>
+
+    <!-- ini untuk Overlay diletakkan di root body agar tidak mengganggu klik kontainer -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+    <!-- Sidebar dikeluarkan dari kontainer agar tidak terpotong properti overflow di HP. ini penjelasan singkat dari tole gabut -->  
     <aside class="main-sidebar" id="mainSidebar">
         <div class="sidebar-nav-header">
             <button class="btn-new-chat" id="newChatBtn">
@@ -744,68 +801,16 @@
         </div>
     </div>
 
-    <!-- FIREBASE MODULES SCRIPT -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-        import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
-
-        // Konfigurasi Firebase milik Anda
-        const firebaseConfig = {
-            apiKey: "AIzaSyCaElUaiGFxLwZEE3QxTsSGMqbiS1zQGRw",
-            authDomain: "ai-database-ce34b.firebaseapp.com",
-            projectId: "ai-database-ce34b",
-            storageBucket: "ai-database-ce34b.firebasestorage.app",
-            messagingSenderId: "986577371321",
-            appId: "1:986577371321:web:60f95349972449d0201b68",
-            measurementId: "G-L29CKTWT63"
-        };
-
-        // Inisialisasi Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const database = getDatabase(app);
-
-        // Membuat ID Pengguna unik agar riwayat tidak bercampur antar pengunjung
-        function getOrCreateUserId() {
-            let uid = localStorage.getItem('ebarig_user_uid');
-            if (!uid) {
-                uid = 'user_' + Math.random().toString(36).substring(2, 11);
-                localStorage.setItem('ebarig_user_uid', uid);
-            }
-            return uid;
-        }
-        const USER_ID = getOrCreateUserId();
-
-        // Deklarasi Variabel Global Global
-        let GROQ_API_KEY = "";
+    <script>
+        // Keamanan API Key 
+    const p1 = "gsk_";
+    const p2 = "yuKR5YIQ8M";
+    const p3 = "kQri4D4txy";
+    const p4 = "WGdyb3FYsV9E9";
+    const p5 = "YJmvc91RSDt7uUOEHA7";
+    const GROQ_API_KEY = p1 + p2 + p3 + p4 + p5;
         const MODEL_NAME = 'meta-llama/llama-4-scout-17b-16e-instruct';
-        let allConversations = {};
-        let currentSessionId = null;
 
-        // Mendengarkan perubahan API Key di Firebase secara Realtime
-        const apiKeyRef = ref(database, 'admin/apiKey');
-        onValue(apiKeyRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                GROQ_API_KEY = data;
-                console.log("GROQ API Key terpasang secara global dari Firebase.");
-            }
-        });
-
-        // Mendengarkan perubahan data Riwayat Obrolan milik User saat ini di Firebase
-        const userChatsRef = ref(database, `chats/${USER_ID}`);
-        onValue(userChatsRef, (snapshot) => {
-            allConversations = snapshot.val() || {};
-            renderHistoryList();
-            
-            // Render ulang chat area jika sesi saat ini diperbarui
-            if (currentSessionId && allConversations[currentSessionId]) {
-                renderActiveChatMessages();
-            }
-        });
-
-        // DOM Elements
         const appContainer = document.getElementById('appContainer');
         const chatArea = document.getElementById('chatArea');
         const userInput = document.getElementById('userInput');
@@ -833,8 +838,12 @@
 
         let isDarkModeActive = false;
         let isCodingModeActive = false;
+        let allConversations = JSON.parse(localStorage.getItem('ebarig_chats')) || {};
+        let currentSessionId = null;
 
-        // Background Animasi Canvas
+        // ==========================================================================
+        // ini untuk BACKGROUND ANIMASI CANVAS, toleee capek cooog istirahatlah 10 menit
+        // ==========================================================================
         const canvas = document.getElementById('galaxyCanvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -880,7 +889,9 @@
         }
         animateGalaxy();
 
-        // Kontrol Sidebar
+        // ==========================================================================
+        // naahhhh ini untuk "SISTEM KONTROL SIDEBAR & INTERAKSI AMAN HP"
+        // ==========================================================================
         function closeSidebarMobile() {
             mainSidebar.classList.remove('active');
             sidebarOverlay.classList.remove('active');
@@ -987,8 +998,7 @@
                 if (id === currentSessionId) item.classList.add('active');
                 item.innerHTML = `<i class="fa-regular fa-message"></i> <span>${allConversations[id].title}</span>`;
                 item.addEventListener('click', () => {
-                    currentSessionId = id;
-                    renderActiveChatMessages();
+                    loadChatSession(id);
                     closeSidebarMobile();
                 });
                 chatHistoryList.appendChild(item);
@@ -1011,10 +1021,12 @@
             closeSidebarMobile();
         });
 
-        function renderActiveChatMessages() {
+        function loadChatSession(id) {
+            window.speechSynthesis.cancel();
+            currentSessionId = id;
             chatArea.innerHTML = '';
-            const session = allConversations[currentSessionId];
-            if (session && session.messages && session.messages.length > 0) {
+            const session = allConversations[id];
+            if (session.messages.length > 0) {
                 if (welcomeScreen) welcomeScreen.style.display = 'none';
                 session.messages.forEach(msg => {
                     if (msg.role === 'user') appendUserMessage(msg.text, msg.image, false);
@@ -1024,46 +1036,36 @@
                 if (welcomeScreen) welcomeScreen.style.display = 'flex';
                 chatArea.appendChild(welcomeScreen);
             }
+            renderHistoryList();
         }
 
-        async function saveMessageToFirebase(role, text, image = null, hasVoice = true) {
+        function saveMessageToLocalStorage(role, text, image = null, hasVoice = true) {
             if (!currentSessionId) {
                 currentSessionId = Date.now().toString();
-                let cleanTitle = text ? (text.length > 22 ? text.substring(0, 22) + '...' : text) : 'Analisis Gambar';
+                let cleanTitle = text ? text.substring(0, 22) + '...' : 'Analisis Gambar';
                 allConversations[currentSessionId] = { title: cleanTitle, messages: [] };
             }
-            if(!allConversations[currentSessionId].messages) {
-                allConversations[currentSessionId].messages = [];
-            }
             allConversations[currentSessionId].messages.push({ role, text, image, hasVoice });
-            
-            await set(ref(database, `chats/${USER_ID}/${currentSessionId}`), allConversations[currentSessionId]);
+            localStorage.setItem('ebarig_chats', JSON.stringify(allConversations));
+            renderHistoryList();
         }
 
         resetAllBtn.addEventListener('click', () => {
             if (confirm("Hapus semua riwayat obrolan?")) {
                 window.speechSynthesis.cancel();
-                remove(ref(database, `chats/${USER_ID}`)).then(() => {
-                    startNewChatSession();
-                    closeSidebarMobile();
-                });
+                allConversations = {};
+                localStorage.removeItem('ebarig_chats');
+                startNewChatSession();
+                closeSidebarMobile();
             }
         });
 
+        // ==========================================================================
+        // ga papalah capek yang pentik semua bisa pake ai gratis
+        // ==========================================================================
         async function handleSendMessage() {
             const text = userInput.value.trim();
             if (!text && !currentBase64Image) return;
-
-            // Perintah Khusus Admin Mengatur API Key lewat chat
-            if (text.startsWith('/apikey ')) {
-                const newKey = text.replace('/apikey ', '').trim();
-                if (newKey) {
-                    await set(ref(database, 'admin/apiKey'), newKey);
-                    alert("Berhasil! Groq API Key terpusat telah diperbarui di Firebase.");
-                    userInput.value = '';
-                }
-                return;
-            }
 
             if (welcomeScreen) welcomeScreen.style.display = 'none';
             appendUserMessage(text, currentBase64Image, true);
@@ -1089,12 +1091,6 @@
 
             const base64Data = currentBase64Image;
             clearImagePreview();
-
-            if (!GROQ_API_KEY) {
-                removeLoadingIndicator(loadingId);
-                appendAiMessage("⚠️ **Akses Ditolak:** API Key belum disetel oleh admin di database Firebase. Silakan hubungi admin Anda.", false, false, false);
-                return;
-            }
 
             try {
                 let messageContent = [{ type: "text", text: text || "Tolong analisis gambar ini." }];
@@ -1144,7 +1140,7 @@
             }
             chatArea.appendChild(msgDiv);
             scrollToBottom();
-            if (shouldSave) saveMessageToFirebase('user', text, imageSrc, true);
+            if (shouldSave) saveMessageToLocalStorage('user', text, imageSrc, true);
         }
 
         function appendAiMessage(fullMarkdownText, includeVoiceOption = true, shouldSave = true, animate = true) {
@@ -1175,7 +1171,7 @@
                 msgDiv.innerHTML = marked.parse(fullMarkdownText);
                 finishAiMessageRendering(msgDiv, fullMarkdownText, includeVoiceOption);
             }
-            if (shouldSave) saveMessageToFirebase('ai', fullMarkdownText, null, includeVoiceOption);
+            if (shouldSave) saveMessageToLocalStorage('ai', fullMarkdownText, null, includeVoiceOption);
         }
 
         function finishAiMessageRendering(msgDiv, fullMarkdownText, includeVoiceOption) {
@@ -1219,6 +1215,8 @@
         sendBtn.addEventListener('click', handleSendMessage);
         userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleSendMessage(); } });
 
+        renderHistoryList();
+
         const renderer = new marked.Renderer();
         renderer.code = function (codeInfo, infostring) {
             const code = typeof codeInfo === 'string' ? codeInfo : codeInfo.text;
@@ -1227,6 +1225,9 @@
             return `<div class="code-container"><div class="code-header"><span><i class="fa-solid fa-code"></i> ${lang}</span><button class="btn-copy" onclick="copyCodeText(this)"><i class="fa-regular fa-copy"></i> Salin</button></div><pre><code class="language-${lang}">${escapedCode}</code></pre></div>`;
         };
         marked.setOptions({ renderer: renderer });
+        // ==========================================================================
+        // dikit lagi selesai. mohon hargai tole
+        // ==========================================================================
 
         window.copyCodeText = function (buttonElement) {
             const codeContainer = buttonElement.closest('.code-container');
@@ -1236,7 +1237,11 @@
                 setTimeout(() => { buttonElement.innerHTML = `<i class="fa-regular fa-copy"></i> Salin`; }, 2000);
             });
         };
+        // ==========================================================================
+        // akhirnya selesai, bisa tidur dengan nyenyak malam ini, semoga besok ada orederan
+        // macam ini.
+        // ==========================================================================
     </script>
 </body>
 
-</html>
+</html> 
